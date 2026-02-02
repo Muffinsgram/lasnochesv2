@@ -23,7 +23,7 @@ const firebaseConfig = {
 const CLIENT_ID = "1466766670801539117"; 
 const DISCORD_SERVER_ID = "771671568405364749";
 // Canlıya aldığında burayı kendi site adresinle değiştir
-const REDIRECT_URI = "http://127.0.0.1:5500/index.html"; 
+const REDIRECT_URI = "https://lasnochesv2.vercel.app/index.html"; 
 
 // --- WEBHOOK URL'LERİ ---
 const JOIN_WEBHOOK_URL = "https://discord.com/api/webhooks/1464544708255547520/CMqGMits99YFybRHyFsZaZukrb3zfeES8axsdYJlBYWSzykIcHCkvx1Cmw6G11w-x3l1"; 
