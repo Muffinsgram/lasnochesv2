@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAS NOCHES | PRO ESPORTS</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Teko:wght@400;600&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="src/css/style.css">
+    
+    <link rel="shortcut icon" href="src/img/logo.jpeg" type="image/x-icon">
+
+    <meta name="description" content="Las Noches Espor Kulübü Resmi Web Sitesi. Valorant arenasında sınırları yok etmeye geliyoruz.">
+    <meta property="og:title" content="LAS NOCHES | Sınırları Yok Et">
+    <meta property="og:image" content="src/img/logo.jpeg"> 
+    
+</head>
+<body>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="myBar"></div>
+    </div>
+
+    <canvas id="matrixCanvas"></canvas>
+    <div id="hackedOverlay">
+        <div class="hacked-text"><h1>⚠️ SİSTEM HACKLENDİ ⚠️</h1></div>
+    </div>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <div class="particles"></div>
+    <div class="grid-bg"></div>
+
+    <div class="loader-wrapper">
+        <div class="loader-logo">LN</div>
+        <div class="loader-bar"></div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div id="joinModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <div id="applicationFormContainer">
+            <div class="modal-header"><h2>PRO <span>BAŞVURU</span></h2></div>
+            
+            <div id="discordLoginSection" style="text-align: center;">
+                <i class="fab fa-discord" style="font-size: 4rem; color: #5865F2; margin-bottom: 15px;"></i>
+                <p style="color: #ccc; font-size: 0.9rem; margin-bottom: 20px;">Profesyonel başvuru yapmak için giriş yapmalısın.</p>
+                <button type="button" class="discord-login-btn" onclick="loginWithDiscord()">
+                    <i class="fab fa-discord"></i> DISCORD İLE GİRİŞ YAP
+                </button>
+            </div>
+
+            <div id="discordUserDisplay" class="user-profile-card" style="display: none;">
+                <img id="userAvatar" src="" class="user-avatar" alt="Avatar">
+                <div class="user-info"><h4 id="userName">Kullanıcı</h4><span id="userId">ID: 0000</span></div>
+                <button type="button" class="logout-btn" onclick="logoutDiscord()">ÇIKIŞ</button>
+            </div>
+
+            <form id="appForm" style="display: none;">
+                <div class="input-group"><i class="fas fa-user"></i><input type="text" id="ign" placeholder="Oyun İçi İsim (IGN #Etiket)" required></div>
+                <input type="hidden" id="discordIdHidden">
+                
+                <p style="color:#aaa; font-size:0.9rem; margin-bottom:5px; text-align:center;">Ana Rolünüz</p>
+                <div class="role-selector">
+                    <label>
+                        <input type="radio" name="role" value="Duelist" checked>
+                        <div class="role-box"><i class="fas fa-meteor"></i></div>
+                        <span class="role-tooltip">Duelist</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="Initiator">
+                        <div class="role-box"><i class="fas fa-eye"></i></div>
+                        <span class="role-tooltip">Initiator</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="Controller">
+                        <div class="role-box"><i class="fas fa-smog"></i></div>
+                        <span class="role-tooltip">Controller</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="Sentinel">
+                        <div class="role-box"><i class="fas fa-shield-alt"></i></div>
+                        <span class="role-tooltip">Sentinel</span>
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <select id="rankSelect" class="styled-select" required>
+                            <option value="" disabled selected>Rank Seçiniz</option>
+                            <option value="Radiant">Radiant</option>
+                            <option value="İmmortal">Immortal</option>
+                            <option value="Ascendant">Ascendant</option>
+                            <option value="Diamond">Diamond</option>
+                            <option value="Platinium">Platinium</option>
+                            <option value="Gold">Gold</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <select id="ageSelect" class="styled-select" required>
+                            <option value="" disabled selected>Yaş</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20+">20+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group"><i class="fas fa-link"></i><input type="url" id="trackerLink" placeholder="Tracker.gg Linki" required></div>
+                
+                <button type="submit" class="hybrid-btn full" id="submitBtn"><span>BAŞVURU GÖNDER</span></button>
+            </form>
+        </div>
+        <div id="successMessage" style="display: none; text-align: center; padding: 20px;">
+            <i class="fas fa-check-circle" style="font-size: 4rem; color: #00ff88; margin-bottom: 20px;"></i>
+            <h2 style="color: #00ff88;">BAŞVURU ALINDI!</h2>
+            <p>Koçlarımız profilinizi inceleyecek.</p>
+        </div>
+    </div>
+</div>
+
+    <header>
+        <div class="logo-area">
+            <img src="src/img/logo.jpeg" alt="Logo" class="logo-img">
+            <div class="brand">LAS <span>NOCHES</span></div>
+        </div>
+        <nav class="desktop-nav">
+            <ul>
+                <li><a href="#">ANA SAYFA</a></li>
+                <li><a href="#roster">KADRO</a></li>
+                <li><a href="#matches">MAÇLAR</a></li>
+                <li><a href="#media">MEDYA</a></li>
+                <li><a href="#news">HABERLER</a></li> 
+                <li><a href="#community">TOPLULUK</a></li> 
+                <li><a href="#timeline">YOLCULUĞUMUZ</a></li>
+            </ul>
+        </nav>
+        <div class="header-right">
+            <button class="hybrid-btn desktop-btn" id="openModalBtn" style="background: #5865F2; border-radius: 5px;">
+                <i class="fab fa-discord"></i> KATIL
+            </button>
+            <div class="hamburger" id="hamburgerBtn"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#" onclick="closeMenu()">ANA SAYFA</a>
+        <a href="#roster" onclick="closeMenu()">KADRO</a>
+        <a href="#matches" onclick="closeMenu()">MAÇLAR</a>
+        <button class="hybrid-btn full" onclick="openModalFromMobile()">TAKIMA KATIL</button>
+    </div>
+
+    <div id="scrimModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn close-scrim">&times;</span>
+        <div id="scrimFormContainer">
+            <div class="modal-header"><h2>SCRIM <span>AYARLA</span></h2></div>
+            
+            <div id="scrimLoginSection" style="text-align: center; margin-bottom: 20px;">
+                <p style="color:#aaa; margin-bottom:15px;">Scrim ayarlamak için kaptan onayı gerekir.</p>
+                <button type="button" class="discord-login-btn" onclick="loginWithDiscord()">
+                    <i class="fab fa-discord"></i> GİRİŞ YAP
+                </button>
+            </div>
+
+            <div id="scrimUserDisplay" class="user-profile-card" style="display: none;">
+                <img id="scrimUserAvatar" src="" class="user-avatar" alt="Avatar">
+                <div class="user-info"><h4 id="scrimUserName">Kaptan</h4><span>Scrim Yetkilisi</span></div>
+            </div>
+
+            <form id="scrimForm" style="display: none;">
+                <div class="input-group">
+                    <i class="fas fa-shield-alt"></i>
+                    <input type="text" id="teamName" placeholder="Rakip Takım Adı" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                         <input type="datetime-local" id="scrimDate" class="styled-select" style="color-scheme: dark;" required>
+                    </div>
+                    <div class="form-col">
+                        <input type="text" id="avgElo" class="simple-input" placeholder="Ortalama Elo (Örn: Immo+)" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="hybrid-btn full" id="scrimSubmitBtn"><span>SCRIM İSTEĞİ GÖNDER</span></button>
+            </form>
+        </div>
+    </div>
+</div>
+    <section class="hero hidden-animate">
+        <div class="hero-text">
+            <div class="game-tags"><span class="tag val">VALORANT</span></div>
+            <h1>SINIRLARI <br> <span class="gradient-text">YOK ET</span></h1>
+            <p id="typewriter"></p>
+        </div>
+    </section>
+
+    <section id="roster" class="roster-section">
+        <h2 class="section-title">PRO <span>ROSTER</span></h2>
+        <div class="roster-grid" id="dynamic-roster">
+            <div class="loader-wrapper" style="position:relative; height:100px; grid-column:span 3; background:transparent;">
+                <p style="color:white; text-align:center;">Kadro Yükleniyor...</p>
+            </div>
+        </div>
+    </section>
+    <div id="matches">
+        <br><br><br>
+    </div>
+    <section class="matches-section">
+        <h2 class="section-title">MAÇ <span>MERKEZİ</span></h2>
+        <div class="match-tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'upcoming')">GELECEK MAÇLAR</button>
+            <button class="tab-btn" onclick="openTab(event, 'results')">SONUÇLAR</button>
+        </div>
+        <div id="upcoming" class="tab-content active hidden-animate">
+            <div id="upcoming-list" style="width:100%"></div> 
+        </div> 
+        <div id="results" class="tab-content hidden-animate">
+            <div id="results-list" style="width:100%"></div> 
+        </div>
+    </section>
+
+    <div id="media">
+        <br><br><br>
+    </div>
+    <section class="media-section">
+        <h2 class="section-title">MEDYA <span>GALERİSİ</span></h2>
+        <div class="media-container hidden-animate" id="dynamic-media"></div>
+    </section>
+
+    <div id="news"></div> <h2 class="section-title"><br>SON <span>HABERLER</span></h2>
+    <section class="news-section">
+        <div class="news-grid" id="dynamic-news"></div>
+    </section>
+
+    <div id="newsModal" class="modal news-modal">
+        <div class="modal-content news-content-wrapper">
+            <span class="close-btn close-news">&times;</span>
+            <div class="news-modal-img"><img id="modalNewsImg" src="" alt="Haber Detay"></div>
+            <div class="news-modal-body">
+                <span id="modalNewsDate" class="modal-date">TARİH</span>
+                <h2 id="modalNewsTitle">BAŞLIK</h2>
+                <div class="news-text-scroll"><p id="modalNewsText">İçerik...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <section id="community" class="discord-section hidden-animate">
+        <div class="discord-overlay"></div>
+        <div class="discord-container">
+            <h2 class="section-title"><br>DİSCORDA <span>KATIL</span></h2>
+            <div class="dc-glass-card">
+                <div class="dc-left">
+                    <div class="dc-icon-wrapper"><i class="fab fa-discord"></i></div>
+                    <div class="dc-text">
+                        <h2>TOPLULUĞA <b style="color: #5865F2;">KATIL</b></h2>
+                        <p>Turnuvalar, özel çekilişler ve oyuncularla sohbet için resmi <br> sunucumuza davetlisin.</p> <br>
+                        <div class="live-count"><span class="pulse-green"></span> <span id="memberCount">0</span>+ AKTİF ÜYE</div>
+                    </div>
+                </div>
+                <div class="dc-right">
+                    <a href="https://discord.gg/gFAF3u9jC9" target="_blank"><button class="join-dc-btn">SUNUCUYA GİR</button></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="faq-section">
+        <h2 class="section-title">S.S.S. <span>(FAQ)</span></h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question"><h3>Takıma alım şartları nelerdir?</h3><i class="fas fa-plus"></i></div>
+                <div class="faq-answer"><p>Valorant için en az Immortal, CS2 için Faceit Lvl 10.</p></div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question"><h3>Antrenman saatleri nasıl?</h3><i class="fas fa-plus"></i></div>
+                <div class="faq-answer"><p>Haftada 5 gün, günde en az 6 saat.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="timeline" class="timeline-section">
+        <h2 class="section-title">YOLCULUĞUMUZ <span>(HISTORY)</span></h2>
+        <div class="timeline" id="dynamic-history"></div>
+    </section>
+
+    <button id="scrollToTop"><i class="fas fa-chevron-up"></i></button>
+
+    <div id="videoModal" class="video-modal">
+        <div class="video-modal-content">
+            <span class="close-video">&times;</span>
+            <div class="responsive-iframe-container">
+                <iframe id="youtubePlayer" src="" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <footer class="pro-footer">
+        <div class="footer-grid">
+            <div class="footer-col brand-col">
+                <div class="f-logo">LAS <span>NOCHES</span></div>
+                <p>2026 yılında kurulan, sınırları zorlayan global e-spor organizasyonu.</p>
+                <div class="f-socials">
+                    <a href="#" target="_blank"><i class="fab fa-discord"></i></a>
+                    <a href="https://x.com/LasNochesvlr" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/lasnochesvlr/" target="_blank"><i class="fab fa-instagram"></i></a>
+                </div>
+                <button id="openScrimBtn" class="scrim-trigger-btn"><i class="fas fa-handshake"></i> SCRIM İSTEĞİ</button>
+            </div>
+            <div class="footer-col">
+                <h4>HIZLI ERİŞİM</h4>
+                <ul><li><a href="#">Ana Sayfa</a></li><li><a href="#roster">Kadro</a></li><li><a href="#news">Haberler</a></li></ul>
+            </div>
+            <div class="footer-col">
+                <h4>OYUNLAR</h4>
+                <ul><li><a href="#">Valorant</a></li></ul>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>&copy; 2026 LAS NOCHES ESPORTS.</p></div>
+    </footer>
+
+    <script type="module" src="src/js/script.js"></script>
+
+
+<script>
+    window.onscroll = function() {
+            handleScroll();
+        };
+
+        function handleScroll() {
+            // 1. Okuma Çubuğu Mantığı
+            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrolled = (winScroll / height) * 100;
+            document.getElementById("myBar").style.width = scrolled + "%";
+
+            // 2. Başa Dön Butonu Mantığı
+            var scrollBtn = document.getElementById("scrollToTop");
+            if (winScroll > 300) {
+                scrollBtn.classList.add("visible");
+            } else {
+                scrollBtn.classList.remove("visible");
+            }
+        }
+
+        // Butona tıklandığında başa dönme
+        document.getElementById("scrollToTop").onclick = function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        };
+</script>
+</body>
+</html>

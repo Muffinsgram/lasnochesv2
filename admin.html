@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAS NOCHES | SYSTEM ADMIN</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="src/css/admin.css"> 
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+    <div id="toast-container"></div>
+
+    <div id="confirmModal" class="modal" style="z-index: 20000;">
+        <div class="modal-content confirm-box">
+            <div style="margin-bottom: 20px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--val-red); text-shadow: 0 0 20px rgba(255, 70, 85, 0.4);"></i>
+            </div>
+            <h3 style="justify-content: center; border: none; padding: 0; font-size: 2.5rem;">DİKKAT!</h3>
+            <p style="color: #ccc; font-size: 1.1rem; margin-bottom: 10px;">
+                Aşağıdaki veriyi kalıcı olarak silmek üzeresin:
+            </p>
+            <div class="confirm-target-box">
+                <span id="deleteItemName">Veri</span>
+            </div>
+            <div class="confirm-actions">
+                <button id="btnYes" class="delete-btn">EVET, SİL</button>
+                <button id="btnNo" class="cancel-btn">İPTAL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginOverlay">
+        <div class="login-box glass-card">
+            <div class="scan-line"></div>
+            <div class="login-header">
+                <div class="login-logo-icon">LN</div>
+                <h1>LAS NOCHES <br><span>SYSTEM</span></h1>
+            </div>
+            <p>YETKİLİ ERİŞİM PANELİ v2.2</p>
+            <button onclick="loginWithDiscord()" class="discord-btn">
+                <i class="fab fa-discord"></i> DISCORD İLE GİRİŞ YAP
+            </button>
+            <div class="login-footer">
+                SECURE CONNECTION • ENCRYPTED
+            </div>
+        </div>
+    </div>
+
+    <div id="twoFactorOverlay" style="display: none; position: fixed; inset: 0; z-index: 10001; background: #050505; align-items: center; justify-content: center;">
+        <div class="login-box glass-card" style="max-width: 350px;">
+            <div style="margin-bottom: 20px; color: var(--val-red); font-size: 3rem;">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h2 style="font-family: 'Teko'; margin-bottom: 10px; font-size: 2rem;">GÜVENLİK KONTROLÜ</h2>
+            <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 20px;">
+                Discord kanalına gönderilen <strong>6 haneli kodu</strong> giriniz.
+            </p>
+            
+            <input type="text" id="otpInput" maxlength="6" placeholder="XXX XXX" 
+                   style="text-align: center; letter-spacing: 5px; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px;">
+            
+            <button onclick="verifyOTP()" class="save-btn" style="background: var(--primary-blue); color: white;">DOĞRULA</button>
+            
+            <div style="margin-top: 15px; font-size: 0.8rem; color: #666;">
+                Kalan Süre: <span id="otpTimer" style="color: var(--val-red); font-weight: bold;">60</span> sn
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-container" id="adminMainPanel" style="display: none;">
+        
+        <button id="mobileMenuToggle" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <aside class="sidebar glass-panel" id="sidebar">
+            <div class="brand">
+                <div class="logo">LN</div>
+                <span>ADMIN PANEL</span>
+                <button id="closeSidebar" class="close-sidebar-btn"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <nav class="menu">
+                <button class="menu-btn active" onclick="showSection('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</button>
+                <button class="menu-btn" onclick="showSection('players')"><i class="fas fa-users"></i> Oyuncular</button>
+                <button class="menu-btn" onclick="showSection('matches')"><i class="fas fa-trophy"></i> Maçlar</button>
+                <button class="menu-btn" onclick="showSection('news')"><i class="fas fa-newspaper"></i> Haberler</button>
+                <button class="menu-btn" onclick="showSection('media')"><i class="fas fa-play-circle"></i> Medya</button>
+                <button class="menu-btn" onclick="showSection('history')"><i class="fas fa-history"></i> Tarihçe</button>
+            </nav>
+
+            <div class="user-area">
+                <div class="admin-info">
+                    <span id="adminName">Yükleniyor...</span>
+                    <small>System Admin</small>
+                </div>
+                <button onclick="logout()" class="logout-btn" title="Güvenli Çıkış" style="z-index: 9999;"><i class="fas fa-power-off"></i></button>
+            </div>
+        </aside>
+
+        <main class="content">
+            
+            <section id="dashboard" class="panel-section active">
+                <header>
+                    <h2>GENEL <span>DURUM</span></h2>
+                    <a href="index.html" target="_blank" class="view-site-btn">SİTEYE GİT <i class="fas fa-external-link-alt"></i></a>
+                </header>
+                <div class="stats-grid">
+                    <div class="stat-card glass-card">
+                        <div class="icon-box"><i class="fas fa-users"></i></div>
+                        <div class="info"><span id="countPlayers">0</span><small>AKTİF OYUNCU</small></div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="icon-box"><i class="fas fa-gamepad"></i></div>
+                        <div class="info"><span id="countMatches">0</span><small>TOPLAM MAÇ</small></div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="icon-box"><i class="fas fa-newspaper"></i></div>
+                        <div class="info"><span id="countNews">0</span><small>YAYINDAKİ HABER</small></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="players" class="panel-section">
+                <header style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                    <h2>OYUNCU <span>LİSTESİ</span></h2>
+                    <button class="add-btn" style="margin-left: auto;" onclick="openModal('playerModal')"><i class="fas fa-user-plus"></i> OYUNCU EKLE</button>
+                </header>
+                <div class="table-wrapper glass-card">
+                    <table id="playersTableRaw">
+                        <thead>
+                            <tr>
+                                <th width="80">Avatar</th>
+                                <th>Kimlik</th>
+                                <th>Rol</th>
+                                <th>Rank</th>
+                                <th width="100">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablePlayers"></tbody>
+                    </table>
+                    <div id="loaderPlayers" class="loader-container" style="display:none;"><div class="spinner"></div></div>
+                </div>
+            </section>
+
+            <section id="matches" class="panel-section">
+                <header>
+                    <h2>FİKSTÜR <span>YÖNETİMİ</span></h2>
+                    <button class="add-btn" onclick="openModal('matchModal')"><i class="fas fa-calendar-plus"></i> MAÇ EKLE</button>
+                </header>
+                <div class="table-wrapper glass-card">
+                    <table id="matchesTableRaw">
+                        <thead>
+                            <tr>
+                                <th>Durum</th>
+                                <th>Rakip Takım</th>
+                                <th>Skor</th>
+                                <th>Tarih</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableMatches"></tbody>
+                    </table>
+                    <div id="loaderMatches" class="loader-container" style="display:none;"><div class="spinner"></div></div>
+                </div>
+            </section>
+
+            <section id="news" class="panel-section">
+                <header>
+                    <h2>HABER <span>MERKEZİ</span></h2>
+                    <button class="add-btn" onclick="openModal('newsModal')"><i class="fas fa-plus"></i> HABER YAZ</button>
+                </header>
+                <div class="list-wrapper" id="tableNews"></div>
+                <div id="loaderNews" class="loader-container" style="display:none;"><div class="spinner"></div></div>
+            </section>
+
+            <section id="media" class="panel-section">
+                <header>
+                    <h2>MEDYA <span>GALERİSİ</span></h2>
+                    <button class="add-btn" onclick="openModal('mediaModal')"><i class="fas fa-video"></i> VİDEO EKLE</button>
+                </header>
+                <div class="list-wrapper" id="tableMedia"></div>
+                <div id="loaderMedia" class="loader-container" style="display:none;"><div class="spinner"></div></div>
+            </section>
+
+            <section id="history" class="panel-section">
+                <header>
+                    <h2>KULÜP <span>TARİHÇESİ</span></h2>
+                    <button class="add-btn" onclick="openModal('historyModal')"><i class="fas fa-plus"></i> DÖNEM EKLE</button>
+                </header>
+                <div class="list-wrapper" id="tableHistory"></div>
+                <div id="loaderHistory" class="loader-container" style="display:none;"><div class="spinner"></div></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="playerModal" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close" onclick="closeModal('playerModal')">&times;</span>
+            <h3>OYUNCU <span>PROFİLİ</span></h3>
+            
+            <form onsubmit="savePlayer(event)">
+                <div class="form-grid">
+                    <div>
+                        <label class="input-label">Oyun İçi İsim (IGN)</label>
+                        <input type="text" id="pNick" placeholder="Örn: CNed" required>
+                    </div>
+                    <div>
+                        <label class="input-label">Gerçek İsim</label>
+                        <input type="text" id="pReal" placeholder="Ad Soyad">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div>
+                        <label class="input-label">Takım Rolü</label>
+                        <select id="pRole">
+                            <option>DUELIST</option>
+                            <option>INITIATOR</option>
+                            <option>CONTROLLER</option>
+                            <option>SENTINEL</option>
+                            <option>COACH</option>
+                            <option>IGL</option>
+                            <option>MANAGER</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="input-label">Rank</label>
+                        <select id="pRank">
+                            <option value="Radiant">Radiant</option>
+                            <option value="Immortal 3">Immortal 3</option>
+                            <option value="Immortal 2">Immortal 2</option>
+                            <option value="Immortal 1">Immortal 1</option>
+                            <option value="Ascendant">Ascendant</option>
+                            <option value="Diamond">Diamond</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div>
+                        <label class="input-label">Main Ajan</label>
+                        <input type="text" id="pAgent" placeholder="Örn: Jett">
+                    </div>
+                    <div>
+                        <label class="input-label">Crosshair Kodu</label>
+                        <input type="text" id="pCross" placeholder="0;s;1;P;c;5...">
+                    </div>
+                </div>
+
+                <div class="media-uploader">
+                    <label class="input-label">Profil Fotoğrafı (URL)</label>
+                    <div class="url-input-wrapper">
+                        <div class="url-icon"><i class="fas fa-link"></i></div>
+                        <input type="text" id="pImage" placeholder="https://resim-linki.com/ornek.jpg" oninput="previewUrl(this.value)">
+                        <button type="button" class="paste-btn" onclick="navigator.clipboard.readText().then(text => {document.getElementById('pImage').value = text; previewUrl(text);})" title="Panodan Yapıştır"><i class="fas fa-paste"></i></button>
+                    </div>
+
+                    <div id="uploadPreview" class="upload-preview" style="display:none;">
+                        <img id="previewImg" src="" alt="Önizleme" onerror="this.style.display='none'; document.getElementById('imgError').style.display='block';">
+                        
+                        <div id="imgError" style="display:none; text-align:center; padding:20px; color:#ff4655;">
+                            <i class="fas fa-exclamation-circle" style="font-size:2rem; margin-bottom:10px;"></i><br>
+                            <span>Görsel Yüklenemedi! Linki kontrol edin.</span>
+                        </div>
+
+                        <div class="preview-overlay">
+                            <button type="button" onclick="clearPreview()" class="remove-img-btn"><i class="fas fa-trash"></i> Resmi Kaldır</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="social-manager">
+                    <label class="input-label">Sosyal Medya Hesapları</label>
+                    <div class="smart-input-group">
+                        <div class="platform-icon" id="detectedIcon"><i class="fas fa-link"></i></div>
+                        <input type="text" id="sUrl" placeholder="Profil linkini yapıştır (Otomatik algılar)..." oninput="detectPlatform(this.value)">
+                        <button type="button" class="add-social-btn" onclick="addSocialLink()"><i class="fas fa-plus"></i> EKLE</button>
+                    </div>
+                    <div id="addedSocialsList" class="socials-list"></div>
+                </div>
+
+                <button type="submit" class="save-btn">KAYDET</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="matchModal" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close" onclick="closeModal('matchModal')">&times;</span>
+            <h3>MAÇ <span>DETAYLARI</span></h3>
+            <form onsubmit="saveMatch(event)">
+                <div class="form-grid">
+                    <div>
+                         <label class="input-label">Rakip Takım</label>
+                         <input type="text" id="mOpponent" placeholder="Takım Adı" required>
+                    </div>
+                    <div>
+                         <label class="input-label">Turnuva / Etkinlik</label>
+                         <input type="text" id="mTourney" placeholder="Örn: VCT Elemeleri">
+                    </div>
+                </div>
+                <div class="input-row" style="margin-bottom: 15px; display: flex; gap: 15px;">
+                    <div style="flex:1">
+                        <label class="input-label">Tarih</label>
+                        <input type="date" id="mDate" required style="margin-bottom:0">
+                    </div>
+                    <div style="flex:1">
+                        <label class="input-label">Maç Durumu</label>
+                        <select id="mStatus" onchange="toggleScoreInput(this.value)" style="margin-bottom:0">
+                            <option value="upcoming">Gelecek Maç</option>
+                            <option value="finished">Tamamlandı</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="scoreArea" style="display:none; gap:10px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="flex:1">
+                        <label class="input-label" style="text-align: center;">BİZ</label>
+                        <input type="number" id="mS1" style="text-align: center; font-size: 1.2rem; font-weight:bold;">
+                    </div>
+                    <div style="display:flex; align-items:center; font-weight:bold; color:#555;">-</div>
+                    <div style="flex:1">
+                        <label class="input-label" style="text-align: center;">RAKİP</label>
+                        <input type="number" id="mS2" style="text-align: center; font-size: 1.2rem; font-weight:bold;">
+                    </div>
+                    <div style="flex:1">
+                         <label class="input-label">SONUÇ</label>
+                         <select id="mResult" style="margin-bottom:0">
+                             <option value="win">KAZANDIK</option>
+                             <option value="lose">KAYBETTİK</option>
+                         </select>
+                    </div>
+                </div>
+                <label class="input-label">Harita (Map)</label>
+                <input type="text" id="mMap" placeholder="Örn: Haven, Ascent">
+                <button type="submit" class="save-btn">KAYDET</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="newsModal" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close" onclick="closeModal('newsModal')">&times;</span>
+            <h3>HABER <span>EKLE</span></h3>
+            <form onsubmit="saveNews(event)">
+                <label class="input-label">Başlık</label>
+                <input type="text" id="nTitle" placeholder="Haber Başlığı" required>
+                <label class="input-label">Kısa Özet (Ana Sayfa İçin)</label>
+                <input type="text" id="nSummary" placeholder="1-2 cümlelik özet...">
+                <label class="input-label">Kapak Görseli URL</label>
+                <input type="text" id="nImage" placeholder="https://...">
+                <label class="input-label">İçerik</label>
+                <textarea id="nContent" placeholder="Haberin detayları..." rows="6"></textarea>
+                <button type="submit" class="save-btn">KAYDET</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="mediaModal" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close" onclick="closeModal('mediaModal')">&times;</span>
+            <h3>MEDYA <span>EKLE</span></h3>
+            <form onsubmit="saveMedia(event)">
+                <label class="input-label">Video Başlığı</label>
+                <input type="text" id="vidTitle" placeholder="Video Başlığı" required>
+                <label class="input-label">Video Linki (YouTube)</label>
+                <input type="text" id="vidLink" placeholder="Link veya ID" required>
+                <label class="input-label">Thumbnail (Opsiyonel)</label>
+                <input type="text" id="vidThumb" placeholder="Kapak resmi URL'si">
+                <button type="submit" class="save-btn">KAYDET</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close" onclick="closeModal('historyModal')">&times;</span>
+            <h3>TARİHÇE <span>KAYDI</span></h3>
+            <form onsubmit="saveHistory(event)">
+                <label class="input-label">Yıl</label>
+                <input type="number" id="hYear" placeholder="2024" required>
+                <label class="input-label">Olay Başlığı</label>
+                <input type="text" id="hTitle" placeholder="Örn: Kuruluş, İlk Şampiyonluk" required>
+                <label class="input-label">Açıklama</label>
+                <textarea id="hDesc" placeholder="Detaylar..." rows="4"></textarea>
+                <button type="submit" class="save-btn">KAYDET</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="src/js/admin.js"></script>
+</body>
+</html>
