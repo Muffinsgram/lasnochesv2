@@ -18,7 +18,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // YETKİLİ AYARLARI 
-const ADMIN_IDS = ["517023660972834847", "1466766670801539117", "766290817592852480"]; 
+const ADMIN_IDS = ["517023660972834847", "1466766670801539117", "766290817592852480", "777880085483094036"]; 
 const CLIENT_ID = "1466766670801539117"; 
 const REDIRECT_URI = "https://lasnochesv2.vercel.app/admin.html"; // Canlıya alınca domaini güncelle!
 
@@ -735,4 +735,5 @@ function startRealtimeDashboard() {
 
 // Uygulamayı Başlat
 checkAuth();
+
 
