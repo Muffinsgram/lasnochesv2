@@ -17,10 +17,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// YETKİLİ AYARLARI
+// YETKİLİ AYARLARI 
 const ADMIN_IDS = ["517023660972834847", "1466766670801539117"]; 
 const CLIENT_ID = "1466766670801539117"; 
-const REDIRECT_URI = "https://lasnochesv2.vercel.app//admin.html"; // Canlıya alınca domaini güncelle!
+const REDIRECT_URI = "https://lasnochesv2.vercel.app/admin.html"; // Canlıya alınca domaini güncelle!
 
 // --- WEBHOOK AYARLARI ---
 // 1. GENEL LOGLAR (Veri ekleme/silme vb. buraya düşer)
